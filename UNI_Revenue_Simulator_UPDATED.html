@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UNI Revenue Simulator</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px; }
+    .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #0047AB; }
+    label { font-weight: bold; margin-top: 15px; display: block; }
+    input { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+    button { background-color: #0047AB; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%; }
+    button:hover { background-color: #00357e; }
+    .output { margin-top: 30px; font-size: 1.1em; background-color: #eef; padding: 20px; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>UNI Revenue Simulator</h1>
+
+    <label for="users">Total Users</label>
+    <input type="number" id="users" value="75000">
+
+    <label for="platUsers">UNI Plat Subscribers</label>
+    <input type="number" id="platUsers" value="50000">
+
+    <label for="eliteUsers">UNI Elite Subscribers</label>
+    <input type="number" id="eliteUsers" value="10000">
+
+    <label for="avgSpent">Avg Purchase Amount per Buyer ($)</label>
+    <input type="number" id="avgSpent" value="25">
+
+    <label for="pctBuyers">% of Users Making Purchases</label>
+    <input type="number" id="pctBuyers" value="40">
+
+    <label for="venueSubs"># of Venue Hub Subscribers</label>
+    <input type="number" id="venueSubs" value="5">
+
+    <label for="adClients"># of Connective Ad Clients</label>
+    <input type="number" id="adClients" value="3">
+
+    <label for="insightsReports"># of UNI Insights Reports Sold</label>
+    <input type="number" id="insightsReports" value="1">
+
+    <label for="atlasSubs"># of UNI Atlas Subscribers</label>
+    <input type="number" id="atlasSubs" value="2">
+
+    <button id="calculateBtn">Simulate Revenue</button>
+
+    <div class="output" id="results"></div>
+  </div>
+
+  <script>
+    function formatNumber(num) {
+      return num.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("calculateBtn").addEventListener("click", function () {
+        const users = parseFloat(document.getElementById("users").value);
+        const platUsers = parseFloat(document.getElementById("platUsers").value);
+        const eliteUsers = parseFloat(document.getElementById("eliteUsers").value);
+        const avgSpent = parseFloat(document.getElementById("avgSpent").value);
+        const pctBuyers = parseFloat(document.getElementById("pctBuyers").value) / 100;
+        const venueSubs = parseFloat(document.getElementById("venueSubs").value);
+        const adClients = parseFloat(document.getElementById("adClients").value);
+        const insightsReports = parseFloat(document.getElementById("insightsReports").value);
+        const atlasSubs = parseFloat(document.getElementById("atlasSubs").value);
+
+        const platRevenue = platUsers * 20;
+        const eliteRevenue = eliteUsers * 50;
+        const buyers = users * pctBuyers;
+        const apiRevenue = buyers * avgSpent * 0.025;
+        const venueRevenue = venueSubs * 200;
+        const adRevenue = adClients * 5000;
+        const insightsRevenue = insightsReports * 2000;
+        const atlasRevenue = atlasSubs * 10000;
+
+        const totalRevenue = platRevenue + eliteRevenue + apiRevenue + venueRevenue + adRevenue + insightsRevenue + atlasRevenue;
+
+        const resultHTML = `
+          <div><strong>UNI Plat Subscriptions:</strong> ${formatNumber(platRevenue)}</div>
+          <div><strong>UNI Elite Subscriptions:</strong> ${formatNumber(eliteRevenue)}</div>
+          <div><strong>API Commissions (2.5%):</strong> ${formatNumber(apiRevenue)}</div>
+          <div><strong>Venue Hub Subscriptions:</strong> ${formatNumber(venueRevenue)}</div>
+          <div><strong>Connective Advertising:</strong> ${formatNumber(adRevenue)}</div>
+          <div><strong>UNI Insights Reports:</strong> ${formatNumber(insightsRevenue)}</div>
+          <div><strong>UNI Atlas Subscriptions:</strong> ${formatNumber(atlasRevenue)}</div>
+          <hr>
+          <div><strong>Total Estimated Monthly Revenue:</strong> <span style="color: green;">${formatNumber(totalRevenue)}</span></div>
+        `;
+        document.getElementById("results").innerHTML = resultHTML;
+      });
+    });
+  </script>
+</body>
+</html>
