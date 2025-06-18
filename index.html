@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +12,120 @@
     button { background-color: #0047AB; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%; }
     button:hover { background-color: #00357e; }
     .output { margin-top: 30px; font-size: 1.1em; background-color: #eef; padding: 20px; border-radius: 10px; }
+    .secondary-btn { 
+      background-color: #6c757d; 
+      margin-top: 15px; 
+      font-size: 0.9em; 
+      padding: 10px 15px;
+    }
+    .secondary-btn:hover { background-color: #545b62; }
+    .profitability-btn { 
+      background-color: #28a745; 
+      margin-top: 15px; 
+      font-size: 0.9em; 
+      padding: 10px 15px;
+    }
+    .profitability-btn:hover { background-color: #218838; }
+    .how-it-works, .profitability { 
+      margin-top: 20px; 
+      background-color: #f8f9fa; 
+      padding: 20px; 
+      border-radius: 10px; 
+      border: 1px solid #dee2e6;
+      display: none;
+    }
+    .profitability {
+      background-color: #f0f8f0;
+      border: 1px solid #c3e6cb;
+    }
+    .how-it-works h3, .profitability h3 { 
+      color: #0047AB; 
+      margin-top: 0; 
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+    .profitability h3 {
+      color: #155724;
+    }
+    .toast {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .toast.show {
+      display: flex;
+    }
+    .toast-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      max-width: 400px;
+      text-align: center;
+      animation: popIn 0.3s ease-out;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .toast-header {
+      font-weight: bold;
+      font-size: 1.3em;
+      margin-bottom: 15px;
+      color: #0047AB;
+    }
+    .toast-body {
+      margin-bottom: 25px;
+      color: #495057;
+      line-height: 1.5;
+    }
+    .toast-btn {
+      background: #0047AB;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: all 0.2s ease;
+      font-size: 1em;
+    }
+    .toast-btn:hover {
+      background: #00357e;
+      transform: translateY(-1px);
+    }
+    .toast-close {
+      background: transparent;
+      color: #6c757d;
+      border: 1px solid #dee2e6;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .toast-close:hover {
+      background: #f8f9fa;
+      border-color: #adb5bd;
+    }
+    .formula-row { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 8px 0; 
+      border-bottom: 1px solid #e9ecef;
+    }
+    .formula-row:last-child { border-bottom: none; }
+    .formula-label { font-weight: bold; color: #495057; }
+    .formula-calc { color: #6c757d; font-family: monospace; }
+    .formula-result { font-weight: bold; color: #28a745; }
   </style>
 </head>
 <body>
@@ -22,11 +135,11 @@
     <label for="users">Total Users</label>
     <input type="number" id="users" value="75000">
 
-    <label for="platUsers">UNI Plat Subscribers</label>
-    <input type="number" id="platUsers" value="50000">
+    <label for="platUsers">% of UNI Plat Subscribers</label>
+    <input type="number" id="platUsers" value="67" step="0.1">
 
-    <label for="eliteUsers">UNI Elite Subscribers</label>
-    <input type="number" id="eliteUsers" value="10000">
+    <label for="eliteUsers">% of UNI Elite Subscribers</label>
+    <input type="number" id="eliteUsers" value="13" step="0.1">
 
     <label for="avgSpent">Avg Purchase Amount per Buyer ($)</label>
     <input type="number" id="avgSpent" value="25">
@@ -49,6 +162,27 @@
     <button id="calculateBtn">Simulate Revenue</button>
 
     <div class="output" id="results"></div>
+    
+    <button class="profitability-btn" id="profitabilityBtn" style="display: none;">See Profitability</button>
+    
+    <div class="profitability" id="profitabilitySection">
+      <h3>Profitability Analysis</h3>
+      <div id="profitBreakdown"></div>
+      
+      <!-- Simple inline popup that appears after profitability -->
+      <div id="investorCallout" style="display: none; margin-top: 20px; padding: 20px; background: #e7f3ff; border: 2px solid #0047AB; border-radius: 10px; text-align: center;">
+        <h4 style="color: #0047AB; margin-bottom: 10px;">💼 Want to talk through the numbers?</h4>
+        <p style="margin-bottom: 15px;">Let's schedule a call to discuss UNI's growth potential and investment opportunity.</p>
+        <a href="https://calendly.com/isaiah-gouni/30min?month=2025-06" target="_blank" style="background: #0047AB; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold;">Schedule Call</a>
+      </div>
+    </div>
+    
+    <button class="secondary-btn" id="howItWorksBtn" style="display: none;">How This Works</button>
+    
+    <div class="how-it-works" id="howItWorksSection">
+      <h3>Revenue Calculation Breakdown</h3>
+      <div id="formulaBreakdown"></div>
+    </div>
   </div>
 
   <script>
@@ -56,11 +190,27 @@
       return num.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
     }
 
+    function formatNumberPlain(num) {
+      return num.toLocaleString("en-US");
+    }
+
+    function closeToast() {
+      // Not needed anymore
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
-      document.getElementById("calculateBtn").addEventListener("click", function () {
+      const calculateBtn = document.getElementById("calculateBtn");
+      const profitabilityBtn = document.getElementById("profitabilityBtn");
+      const profitabilitySection = document.getElementById("profitabilitySection");
+      const howItWorksBtn = document.getElementById("howItWorksBtn");
+      const howItWorksSection = document.getElementById("howItWorksSection");
+      let isProfitabilityVisible = false;
+      let isHowItWorksVisible = false;
+
+      calculateBtn.addEventListener("click", function () {
         const users = parseFloat(document.getElementById("users").value);
-        const platUsers = parseFloat(document.getElementById("platUsers").value);
-        const eliteUsers = parseFloat(document.getElementById("eliteUsers").value);
+        const platUsersPct = parseFloat(document.getElementById("platUsers").value) / 100;
+        const eliteUsersPct = parseFloat(document.getElementById("eliteUsers").value) / 100;
         const avgSpent = parseFloat(document.getElementById("avgSpent").value);
         const pctBuyers = parseFloat(document.getElementById("pctBuyers").value) / 100;
         const venueSubs = parseFloat(document.getElementById("venueSubs").value);
@@ -68,6 +218,8 @@
         const insightsReports = parseFloat(document.getElementById("insightsReports").value);
         const atlasSubs = parseFloat(document.getElementById("atlasSubs").value);
 
+        const platUsers = users * platUsersPct;
+        const eliteUsers = users * eliteUsersPct;
         const platRevenue = platUsers * 20;
         const eliteRevenue = eliteUsers * 50;
         const buyers = users * pctBuyers;
@@ -78,6 +230,27 @@
         const atlasRevenue = atlasSubs * 10000;
 
         const totalRevenue = platRevenue + eliteRevenue + apiRevenue + venueRevenue + adRevenue + insightsRevenue + atlasRevenue;
+
+        // Margin assumptions
+        const margins = {
+          plat: 0.90,
+          elite: 0.92,
+          api: 0.80,
+          venue: 0.85,
+          ads: 0.88,
+          insights: 0.90,
+          atlas: 0.93
+        };
+        
+        // Calculate profits per stream
+        const profitPlat = platRevenue * margins.plat;
+        const profitElite = eliteRevenue * margins.elite;
+        const profitAPI = apiRevenue * margins.api;
+        const profitVenue = venueRevenue * margins.venue;
+        const profitAds = adRevenue * margins.ads;
+        const profitInsights = insightsRevenue * margins.insights;
+        const profitAtlas = atlasRevenue * margins.atlas;
+        const totalProfit = profitPlat + profitElite + profitAPI + profitVenue + profitAds + profitInsights + profitAtlas;
 
         const resultHTML = `
           <div><strong>UNI Plat Subscriptions:</strong> ${formatNumber(platRevenue)}</div>
@@ -91,9 +264,124 @@
           <div><strong>Total Estimated Monthly Revenue:</strong> <span style="color: green;">${formatNumber(totalRevenue)}</span></div>
         `;
         document.getElementById("results").innerHTML = resultHTML;
+
+        // Show both buttons after calculation
+        profitabilityBtn.style.display = "block";
+        howItWorksBtn.style.display = "block";
+
+        // Update the profitability breakdown
+        const profitHTML = `
+          <div class="formula-row">
+            <span class="formula-label">UNI Plat Profit:</span>
+            <span class="formula-calc">${formatNumber(platRevenue)} × ${(margins.plat * 100).toFixed(0)}%</span>
+            <span class="formula-result">${formatNumber(profitPlat)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">UNI Elite Profit:</span>
+            <span class="formula-calc">${formatNumber(eliteRevenue)} × ${(margins.elite * 100).toFixed(0)}%</span>
+            <span class="formula-result">${formatNumber(profitElite)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">API Commission Profit:</span>
+            <span class="formula-calc">${formatNumber(apiRevenue)} × ${(margins.api * 100).toFixed(0)}%</span>
+            <span class="formula-result">${formatNumber(profitAPI)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">Venue Hub Profit:</span>
+            <span class="formula-calc">${formatNumber(venueRevenue)} × ${(margins.venue * 100).toFixed(0)}%</span>
+            <span class="formula-result">${formatNumber(profitVenue)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">Advertising Profit:</span>
+            <span class="formula-calc">${formatNumber(adRevenue)} × ${(margins.ads * 100).toFixed(0)}%</span>
+            <span class="formula-result">${formatNumber(profitAds)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">Insights Reports Profit:</span>
+            <span class="formula-calc">${formatNumber(insightsRevenue)} × ${(margins.insights * 100).toFixed(0)}%</span>
+            <span class="formula-result">${formatNumber(profitInsights)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">Atlas Subscriptions Profit:</span>
+            <span class="formula-calc">${formatNumber(atlasRevenue)} × ${(margins.atlas * 100).toFixed(0)}%</span>
+            <span class="formula-result">${formatNumber(profitAtlas)}</span>
+          </div>
+          <hr style="margin: 15px 0; border: 1px solid #28a745;">
+          <div class="formula-row" style="font-size: 1.1em; font-weight: bold;">
+            <span class="formula-label" style="color: #155724;">Total Monthly Profit:</span>
+            <span class="formula-calc" style="color: #6c757d;">Net after costs</span>
+            <span class="formula-result" style="color: #28a745; font-size: 1.2em;">${formatNumber(totalProfit)}</span>
+          </div>
+        `;
+        document.getElementById("profitBreakdown").innerHTML = profitHTML;
+        
+        // Show the investor callout immediately when profitability is shown
+        document.getElementById("investorCallout").style.display = "block";
+
+        // Update the formula breakdown
+        const formulaHTML = `
+          <div class="formula-row">
+            <span class="formula-label">UNI Plat Subscriptions:</span>
+            <span class="formula-calc">${formatNumberPlain(users)} × ${(platUsersPct * 100).toFixed(1)}% × $20</span>
+            <span class="formula-result">${formatNumber(platRevenue)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">UNI Elite Subscriptions:</span>
+            <span class="formula-calc">${formatNumberPlain(users)} × ${(eliteUsersPct * 100).toFixed(1)}% × $50</span>
+            <span class="formula-result">${formatNumber(eliteRevenue)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">API Commissions:</span>
+            <span class="formula-calc">${formatNumberPlain(users)} × ${(pctBuyers * 100).toFixed(1)}% × ${formatNumberPlain(avgSpent)} × 2.5%</span>
+            <span class="formula-result">${formatNumber(apiRevenue)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">Venue Hub Subscriptions:</span>
+            <span class="formula-calc">${formatNumberPlain(venueSubs)} × ${formatNumberPlain(200)}</span>
+            <span class="formula-result">${formatNumber(venueRevenue)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">Connective Advertising:</span>
+            <span class="formula-calc">${formatNumberPlain(adClients)} × ${formatNumberPlain(5000)}</span>
+            <span class="formula-result">${formatNumber(adRevenue)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">UNI Insights Reports:</span>
+            <span class="formula-calc">${formatNumberPlain(insightsReports)} × ${formatNumberPlain(2000)}</span>
+            <span class="formula-result">${formatNumber(insightsRevenue)}</span>
+          </div>
+          <div class="formula-row">
+            <span class="formula-label">UNI Atlas Subscriptions:</span>
+            <span class="formula-calc">${formatNumberPlain(atlasSubs)} × ${formatNumberPlain(10000)}</span>
+            <span class="formula-result">${formatNumber(atlasRevenue)}</span>
+          </div>
+        `;
+        document.getElementById("formulaBreakdown").innerHTML = formulaHTML;
+      });
+
+      profitabilityBtn.addEventListener("click", function () {
+        console.log("Profitability button clicked!"); // Debug line
+        isProfitabilityVisible = !isProfitabilityVisible;
+        if (isProfitabilityVisible) {
+          profitabilitySection.style.display = "block";
+          profitabilityBtn.textContent = "Hide Profitability";
+        } else {
+          profitabilitySection.style.display = "none";
+          profitabilityBtn.textContent = "See Profitability";
+        }
+      });
+
+      howItWorksBtn.addEventListener("click", function () {
+        isHowItWorksVisible = !isHowItWorksVisible;
+        if (isHowItWorksVisible) {
+          howItWorksSection.style.display = "block";
+          howItWorksBtn.textContent = "Hide How This Works";
+        } else {
+          howItWorksSection.style.display = "none";
+          howItWorksBtn.textContent = "How This Works";
+        }
       });
     });
   </script>
 </body>
 </html>
-/index.html
